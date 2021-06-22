@@ -34,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define UARTDEBUG
+#define UARTDEBUG
 #define MAX_PACKET_LEN 255
 /* USER CODE END PD */
 
