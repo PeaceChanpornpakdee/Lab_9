@@ -34,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define UARTDEBUG
+//#define UARTDEBUG
 #define MAX_PACKET_LEN 255
 /* USER CODE END PD */
 
@@ -505,11 +505,10 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 			{
 				//create packet template
 				uint8_t temp[] =
-				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x00, 0x00,
-						0x00 };
+				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x00, 0x00, 0x00 };
 				//config MotorID
 				temp[4] = MotorID;
-				//calcuate CRC
+				//calculate CRC
 				uint16_t crc_calc = update_crc(0, temp, 9);
 				temp[9] = crc_calc & 0xff;
 				temp[10] = (crc_calc >> 8) & 0xFF;
@@ -538,13 +537,15 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 			}
 			case 0x03://WRITE
 			{
-				//LAB
+				//create packet template
+				//uint8_t temp[] = {0xff,0xff,0xfd,0x00,0x00,0x00,0x00,0x55,0x00};
+
+
 			}
 			default: //Unknown Inst
 			{
 				uint8_t temp[] =
-				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x02, 0x00,
-						0x00 };
+				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x02, 0x00, 0x00 };
 				temp[4] = MotorID;
 				uint16_t crc_calc = update_crc(0, temp, 9);
 				temp[9] = crc_calc & 0xff;
