@@ -537,15 +537,30 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 			}
 			case 0x03://WRITE
 			{
-				//create packet template
-				//uint8_t temp[] = {0xff,0xff,0xfd,0x00,0x00,0x00,0x00,0x55,0x00};
+				//write
+				uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF);
+				uint16_t numberOfDataToWrite = datalen - 5;  //inst+p1+p2+crc1+crc2
+				for(int i = 0; i< numberOfDataToWrite; i++)
+				{
+					Memory[startAddr+i] = parameter[2+i];
+				}
 
+				//create packet template
+				uint8_t temp[] = {0xff,0xff,0xfd,0x00,0x00,0x04,0x00,0x55,0x00};
+				temp[4] = MotorID;
+				uint16_t crc_calc = update_crc(0, temp, 9);
+				uint8_t crctemp[2];
+				crctemp[0] = crc_calc&0xff;
+				crctemp[1] = (crc_calc>>8)&0xff;
+				UARTTxWrite(uart, temp,9);
+				UARTTxWrite(uart, crctemp,2);
+				break;
 
 			}
 			default: //Unknown Inst
 			{
 				uint8_t temp[] =
-				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x02, 0x00, 0x00 };
+				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x04, 0x00, 0x55, 0x02, 0x00, 0x00 };
 				temp[4] = MotorID;
 				uint16_t crc_calc = update_crc(0, temp, 9);
 				temp[9] = crc_calc & 0xff;
@@ -559,7 +574,7 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 		else //crc error
 		{
 			uint8_t temp[] =
-			{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x03, 0x00, 0x00 };
+			{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x04, 0x00, 0x55, 0x03, 0x00, 0x00 };
 			temp[4] = MotorID;
 			uint16_t crc_calc = update_crc(0, temp, 9);
 			temp[9] = crc_calc & 0xff;
